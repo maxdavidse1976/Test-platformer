@@ -1,37 +1,36 @@
 using UnityEngine;
 
+[RequireComponent(typeof(Controller))]
 public class Move : MonoBehaviour
 {
-    [SerializeField] InputController _input = null;
     [SerializeField, Range(0f, 100f)] float _maxSpeed = 4f;
     [SerializeField, Range(0f, 100f)] float _maxAcceleration = 35f;
     [SerializeField, Range(0f, 100f)] float _maxAirAcceleration= 20f;
 
-    Vector2 _direction;
-    Vector2 _desiredVelocity;
-    Vector2 _velocity;
+    Controller _controller;
+    Vector2 _direction, _desiredVelocity, _velocity;
     Rigidbody2D _rigidbody;
     Ground _ground;
 
-    float _maxSpeedChange;
-    float _acceleration;
+    float _maxSpeedChange, _acceleration;
     bool _onGround;
 
     void Awake()
     {
         _rigidbody = GetComponent<Rigidbody2D>();
         _ground = GetComponent<Ground>();
+        _controller = GetComponent<Controller>();
     }
 
     void Update()
     {
-        _direction.x = _input.RetrieveMoveInput();
-        _desiredVelocity = new Vector2(_direction.x, 0f) * Mathf.Max(_maxSpeed - _ground.GetFriction(), 0f);
+        _direction.x = _controller.input.RetrieveMoveInput();
+        _desiredVelocity = new Vector2(_direction.x, 0f) * Mathf.Max(_maxSpeed - _ground.Friction, 0f);
     }
 
     void FixedUpdate()
     {
-        _onGround = _ground.GetOnGround();
+        _onGround = _ground.OnGround;
         _velocity = _rigidbody.velocity;
 
         _acceleration = _onGround ? _maxAcceleration : _maxAirAcceleration;

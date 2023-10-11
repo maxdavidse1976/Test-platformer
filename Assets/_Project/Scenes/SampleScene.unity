@@ -298,6 +298,7 @@ GameObject:
   - component: {fileID: 272870153}
   - component: {fileID: 272870152}
   - component: {fileID: 272870156}
+  - component: {fileID: 272870157}
   m_Layer: 0
   m_Name: Character
   m_TagString: Untagged
@@ -468,7 +469,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 357cc0a916a9df5438d227ad39c2be9b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _input: {fileID: 11400000, guid: bfc9d9c899114cd43975e7dfd7754da7, type: 2}
   _maxSpeed: 4
   _maxAcceleration: 35
   _maxAirAcceleration: 20
@@ -629,11 +629,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 446791a793db5df40ac4988f23584645, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _input: {fileID: 11400000, guid: bfc9d9c899114cd43975e7dfd7754da7, type: 2}
   _jumpHeight: 3
-  _maxAirJumps: 0
+  _maxAirJumps: 1
   _downwardMovementMultiplier: 3
   _upwardMovementMultiplier: 1.7
+  _coyoteTime: 0.2
+  _jumpBufferTime: 0.2
+--- !u!114 &272870157
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 272870147}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 065cebb05c1bb40488d33d3217065114, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  input: {fileID: 11400000, guid: bfc9d9c899114cd43975e7dfd7754da7, type: 2}
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0

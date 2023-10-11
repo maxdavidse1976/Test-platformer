@@ -2,8 +2,12 @@ using UnityEngine;
 
 public class Ground : MonoBehaviour
 {
-    bool _onGround;
-    float _friction;
+    public bool OnGround { get; private set; }
+    public float Friction { get; private set; }
+
+    Vector2 _normal;
+    PhysicsMaterial2D _material;
+
 
     void OnCollisionEnter2D(Collision2D collision)
     {
@@ -19,31 +23,27 @@ public class Ground : MonoBehaviour
 
     void OnCollisionExit2D(Collision2D collision)
     {
-        _onGround = false;
-        _friction = 0f;
+        OnGround = false;
+        Friction = 0f;
     }
 
     void EvaluateCollision(Collision2D collision)
     {
         for (int i = 0; i < collision.contactCount; i++)
         {
-            Vector2 normal = collision.GetContact(i).normal;
-            _onGround |= normal.y >= 0.9f;
+            _normal = collision.GetContact(i).normal;
+            OnGround |= _normal.y >= 0.9f;
         }
     }
 
     void RetrieveFriction(Collision2D collision)
     {
-        PhysicsMaterial2D material = collision.rigidbody.sharedMaterial;
+        _material = collision.rigidbody.sharedMaterial;
 
-        _friction = 0;
-        if (material != null)
+        Friction = 0;
+        if (_material != null)
         {
-            _friction = material.friction;
+            Friction = _material.friction;
         }
     }
-
-    public bool GetOnGround() => _onGround;
-
-    public float GetFriction() => _friction;
 }
