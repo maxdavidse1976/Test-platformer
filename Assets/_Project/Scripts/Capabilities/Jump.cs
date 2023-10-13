@@ -5,14 +5,14 @@ public class Jump : MonoBehaviour
 {
     [SerializeField, Range(0f, 100f)] float _jumpHeight = 3f;
     [SerializeField, Range(0f, 5f)] int _maxAirJumps = 0;
-    [SerializeField, Range(0f, 5f)] float _downwardMovementMultiplier = 3f;
-    [SerializeField, Range(0f, 5f)] float _upwardMovementMultiplier = 1.7f;
+    [SerializeField, Range(0f, 5f)] float _downwardGravityMultiplier = 3f;
+    [SerializeField, Range(0f, 5f)] float _upwardGravityMultiplier = 1.7f;
     [SerializeField, Range(0f, 0.3f)] float _coyoteTime = 0.2f;
     [SerializeField, Range(0f, 0.3f)] float _jumpBufferTime = 0.2f;
 
     Controller _controller;
     Rigidbody2D _rigidbody;
-    Ground _ground;
+    CollisionDataRetriever _collisionDataRetriever;
     Vector2 _velocity;
 
     int _jumpPhase;
@@ -22,7 +22,7 @@ public class Jump : MonoBehaviour
     void Awake()
     {
         _rigidbody = GetComponent<Rigidbody2D>();
-        _ground = GetComponent<Ground>();
+        _collisionDataRetriever = GetComponent<CollisionDataRetriever>();
         _controller = GetComponent<Controller>();
 
         _defaultGravityScale = 1f;
@@ -35,7 +35,7 @@ public class Jump : MonoBehaviour
 
     void FixedUpdate()
     {
-        _onGround = _ground.OnGround;
+        _onGround = _collisionDataRetriever.OnGround;
         _velocity = _rigidbody.velocity;
 
         if (_onGround && _rigidbody.velocity.y == 0) 
@@ -66,11 +66,11 @@ public class Jump : MonoBehaviour
         // Change gravity scale depending on falling or jumping or default gravity if we are on the ground
         if (_controller.input.RetrieveJumpHoldInput() && _rigidbody.velocity.y > 0)
         {
-            _rigidbody.gravityScale = _upwardMovementMultiplier;
+            _rigidbody.gravityScale = _upwardGravityMultiplier;
         }
         else if (!_controller.input.RetrieveJumpHoldInput() && _rigidbody.velocity.y < 0)
         {
-            _rigidbody.gravityScale = _downwardMovementMultiplier;
+            _rigidbody.gravityScale = _downwardGravityMultiplier;
         }
         else if (_rigidbody.velocity.y == 0)
         {

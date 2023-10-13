@@ -10,7 +10,7 @@ public class Move : MonoBehaviour
     Controller _controller;
     Vector2 _direction, _desiredVelocity, _velocity;
     Rigidbody2D _rigidbody;
-    Ground _ground;
+    CollisionDataRetriever _collisionDataRetriever;
 
     float _maxSpeedChange, _acceleration;
     bool _onGround;
@@ -18,19 +18,19 @@ public class Move : MonoBehaviour
     void Awake()
     {
         _rigidbody = GetComponent<Rigidbody2D>();
-        _ground = GetComponent<Ground>();
+        _collisionDataRetriever = GetComponent<CollisionDataRetriever>();
         _controller = GetComponent<Controller>();
     }
 
     void Update()
     {
         _direction.x = _controller.input.RetrieveMoveInput();
-        _desiredVelocity = new Vector2(_direction.x, 0f) * Mathf.Max(_maxSpeed - _ground.Friction, 0f);
+        _desiredVelocity = new Vector2(_direction.x, 0f) * Mathf.Max(_maxSpeed - _collisionDataRetriever.Friction, 0f);
     }
 
     void FixedUpdate()
     {
-        _onGround = _ground.OnGround;
+        _onGround = _collisionDataRetriever.OnGround;
         _velocity = _rigidbody.velocity;
 
         _acceleration = _onGround ? _maxAcceleration : _maxAirAcceleration;
