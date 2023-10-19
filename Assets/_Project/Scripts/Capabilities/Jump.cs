@@ -19,7 +19,7 @@ namespace DragonspiritGames.TestPlatformer
 
         int _jumpPhase;
         float _defaultGravityScale, _jumpSpeed, _coyoteCounter, _jumpBufferCounter;
-        bool _desiredJump, _onGround, _isJumping;
+        bool _desiredJump, _onGround, _isJumping, _isJumpReset;
 
         void Awake()
         {
@@ -27,12 +27,13 @@ namespace DragonspiritGames.TestPlatformer
             _collisionDataRetriever = GetComponent<CollisionDataRetriever>();
             _controller = GetComponent<Controller>();
 
+            _isJumpReset = true;
             _defaultGravityScale = 1f;
         }
 
         void Update()
         {
-            _desiredJump |= _controller.input.RetrieveJumpInput(this.gameObject);
+            _desiredJump = _controller.input.RetrieveJumpInput(this.gameObject);
         }
 
         void FixedUpdate()
@@ -51,14 +52,19 @@ namespace DragonspiritGames.TestPlatformer
                 _coyoteCounter -= Time.deltaTime;
             }
 
-            if (_desiredJump)
+            if (_desiredJump && _isJumpReset)
             {
+                _isJumpReset = false;
                 _desiredJump = false;
                 _jumpBufferCounter = _jumpBufferTime;
             }
-            else if (!_desiredJump && _jumpBufferCounter > 0)
+            else if (_jumpBufferCounter > 0)
             {
                 _jumpBufferCounter -= Time.deltaTime;
+            }
+            else if (!_desiredJump)
+            {
+                _isJumpReset = true;
             }
             if (_jumpBufferCounter > 0)
             {
@@ -66,11 +72,11 @@ namespace DragonspiritGames.TestPlatformer
             }
 
             // Change gravity scale depending on falling or jumping or default gravity if we are on the ground
-            if (_controller.input.RetrieveJumpHoldInput(this.gameObject) && _rigidbody.velocity.y > 0)
+            if (_controller.input.RetrieveJumpInput(this.gameObject) && _rigidbody.velocity.y > 0)
             {
                 _rigidbody.gravityScale = _upwardGravityMultiplier;
             }
-            else if (!_controller.input.RetrieveJumpHoldInput(this.gameObject) && _rigidbody.velocity.y < 0)
+            else if (!_controller.input.RetrieveJumpInput(this.gameObject) && _rigidbody.velocity.y < 0)
             {
                 _rigidbody.gravityScale = _downwardGravityMultiplier;
             }

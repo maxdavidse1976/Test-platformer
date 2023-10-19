@@ -24,7 +24,7 @@ namespace DragonspiritGames.TestPlatformer
         Controller _controller;
 
         Vector2 _velocity;
-        bool _onWall, _onGround, _desiredJump;
+        bool _onWall, _onGround, _desiredJump, _isJumpReset;
         float _wallDirectionX, _wallStickCounter;
 
         void Awake()
@@ -32,14 +32,12 @@ namespace DragonspiritGames.TestPlatformer
             _collisionDataRetriever = GetComponent<CollisionDataRetriever>();
             _rigidbody = GetComponent<Rigidbody2D>();
             _controller = GetComponent<Controller>();
+            _isJumpReset = true;
         }
 
         void Update()
         {
-            if (_onWall && !_onGround)
-            {
-                _desiredJump |= _controller.input.RetrieveJumpInput(this.gameObject);
-            }
+            _desiredJump = _controller.input.RetrieveJumpInput(this.gameObject);
         }
 
         void FixedUpdate()
@@ -67,7 +65,8 @@ namespace DragonspiritGames.TestPlatformer
                 {
                     _velocity.x = 0;
 
-                    if (_controller.input.RetrieveMoveInput(this.gameObject) == _collisionDataRetriever.ContactNormal.x)
+                    if (_controller.input.RetrieveMoveInput(this.gameObject) != 0 &&
+                        Mathf.Sign(_controller.input.RetrieveMoveInput(this.gameObject)) == Mathf.Sign(_collisionDataRetriever.ContactNormal.x))
                     {
                         _wallStickCounter -= Time.deltaTime;
                     }
@@ -90,25 +89,35 @@ namespace DragonspiritGames.TestPlatformer
                 WallJumping = false;
             }
 
-            if (_desiredJump)
+            if (_onWall && !_onGround)
             {
-                if (-_wallDirectionX == _controller.input.RetrieveMoveInput(this.gameObject))
+                if (_desiredJump && _isJumpReset)
                 {
-                    _velocity = new Vector2(_wallJumpClimb.x * _wallDirectionX, _wallJumpClimb.y);
-                    WallJumping = true;
-                    _desiredJump = false;
+                    if (_controller.input.RetrieveMoveInput(this.gameObject) == 0)
+                    {
+                        _velocity = new Vector2(_wallJumpBounce.x * _wallDirectionX, _wallJumpBounce.y);
+                        WallJumping = true;
+                        _desiredJump = false;
+                        _isJumpReset = false;
+                    }
+                    else if (Mathf.Sign(-_wallDirectionX) == Mathf.Sign(_controller.input.RetrieveMoveInput(this.gameObject)))
+                    {
+                        _velocity = new Vector2(_wallJumpClimb.x * _wallDirectionX, _wallJumpClimb.y);
+                        WallJumping = true;
+                        _desiredJump = false;
+                        _isJumpReset = false;
+                    }
+                    else
+                    {
+                        _velocity = new Vector2(_wallJumpLeap.x * _wallDirectionX, _wallJumpLeap.y);
+                        WallJumping = true;
+                        _desiredJump = false;
+                        _isJumpReset = false;
+                    }
                 }
-                else if (_controller.input.RetrieveMoveInput(this.gameObject) == 0)
+                else if (!_desiredJump)
                 {
-                    _velocity = new Vector2(_wallJumpBounce.x * _wallDirectionX, _wallJumpBounce.y);
-                    WallJumping = true;
-                    _desiredJump = false;
-                }
-                else
-                {
-                    _velocity = new Vector2(_wallJumpLeap.x * _wallDirectionX, _wallJumpLeap.y);
-                    WallJumping = true;
-                    _desiredJump = false;
+                    _isJumpReset = true;
                 }
             }
             #endregion
@@ -119,6 +128,7 @@ namespace DragonspiritGames.TestPlatformer
         void OnCollisionEnter2D(Collision2D collision)
         {
             _collisionDataRetriever.EvaluateCollision(collision);
+            _isJumpReset = false;
 
             if (_collisionDataRetriever.OnWall && !_collisionDataRetriever.OnGround && WallJumping)
             {
