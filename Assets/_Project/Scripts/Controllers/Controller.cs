@@ -1,6 +1,9 @@
 using UnityEngine;
 
-public class Controller : MonoBehaviour
+namespace DragonspiritGames.TestPlatformer
 {
-    public InputController input = null;
+    public class Controller : MonoBehaviour
+    {
+        public InputController input = null;
+    }
 }

@@ -1,9 +1,12 @@
 using UnityEngine;
 
-public abstract class InputController : ScriptableObject
+namespace DragonspiritGames.TestPlatformer
 {
-    public abstract float RetrieveMoveInput();
-    public abstract bool RetrieveJumpInput();
+    public abstract class InputController : ScriptableObject
+    {
+        public abstract float RetrieveMoveInput(GameObject gameObject);
+        public abstract bool RetrieveJumpInput(GameObject gameObject);
 
-    public abstract bool RetrieveJumpHoldInput();
+        public abstract bool RetrieveJumpHoldInput(GameObject gameObject);
+    }
 }

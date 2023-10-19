@@ -1,19 +1,22 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "PlayerController", menuName = "InputController/PlayerController")]
-public class PlayerController : InputController
+namespace DragonspiritGames.TestPlatformer
 {
-    public override bool RetrieveJumpInput()
+    [CreateAssetMenu(fileName = "PlayerController", menuName = "InputController/PlayerController")]
+    public class PlayerController : InputController
     {
-        return Input.GetButtonDown("Jump");
-    }
+        public override bool RetrieveJumpInput(GameObject gameObject)
+        {
+            return Input.GetButtonDown("Jump");
+        }
 
-    public override float RetrieveMoveInput()
-    {
-        return Input.GetAxisRaw("Horizontal");
-    }
-    public override bool RetrieveJumpHoldInput()
-    {
-        return Input.GetButton("Jump");
+        public override float RetrieveMoveInput(GameObject gameObject)
+        {
+            return Input.GetAxisRaw("Horizontal");
+        }
+        public override bool RetrieveJumpHoldInput(GameObject gameObject)
+        {
+            return Input.GetButton("Jump");
+        }
     }
 }
